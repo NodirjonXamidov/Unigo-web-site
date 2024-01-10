@@ -11,26 +11,26 @@ use Illuminate\Support\Facades\Validator;
 class AuthController extends Controller
 {
 
-    public function register(Request $request){
-        $request->validate([
-            'name'=>'required',
-            'email'=>'required|email',
-            'password'=>'required|min:8'
-        ]);
+    // public function register(Request $request){
+    //     $request->validate([
+    //         'name'=>'required',
+    //         'email'=>'required|email',
+    //         'password'=>'required|min:8'
+    //     ]);
 
-        $user = User::create([
-            'name'=>$request->name,
-            'email'=>$request->email,
-            'password'=>$request->password,
-        ]);
+    //     $user = User::create([
+    //         'name'=>$request->name,
+    //         'email'=>$request->email,
+    //         'password'=>$request->password,
+    //     ]);
 
-        $token = $user->createToken('auth-token')->plainTextToken;
-            return response()->json([
-                'message'=> 'Successful',
-                'data'=>$user,
-                'token' => $token,
-           ],200);
-    }
+    //     $token = $user->createToken('auth-token')->plainTextToken;
+    //         return response()->json([
+    //             'message'=> 'Successful',
+    //             'data'=>$user,
+    //             'token' => $token,
+    //        ],200);
+    // }
 
     public function login(Request $request){
         $request ->validate([
