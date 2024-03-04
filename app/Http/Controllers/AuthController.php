@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
-
     // public function register(Request $request){
     //     $request->validate([
     //         'name'=>'required',
@@ -32,30 +31,45 @@ class AuthController extends Controller
     //        ],200);
     // }
 
+
     public function login(Request $request){
-        $request ->validate([
-            'email'=>'required',
-            'password'=>'required'
-        ]);
-
-        $credentials = $request->only('email','password');
-        $token = Auth::attempt($credentials);
-
-        if(!$token){
-            return response()->json([
-                'status' =>'error',
-                'message'=>'Login Failed'
+        $validator = Validator::make($request->all(), [
+            'email' =>'required|email',
+            'password' =>'required',
             ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' =>'Validation fails',
+                'errors'=> $validator->errors()
+            ],422);
         }
+        $user = User::where('email', $request->email)->first();
+        if($user){
+            if(Hash::check($request->password, $user->password)){
 
-        return response()->json([
-            'status'=>'success',
-            'messaga'=>'Logged in successfully!',
-            'token'=>$token
-        ]);
-    } 
+                $token = $user->createToken('auth-token')->plainTextToken;
+                return response()->json([
+                    'message'=> 'LoginSuccessful',
+                    'token' => $token,
+                    'data'=>$user
+                ],200);
 
+            }
+        }
+    }
     
-
-        
+    // public function deleteinfo(Request $request,$id){
+    //     $users = User::findOrFail($id);
+    //     if($users){
+    //         $users->delete();
+    //         return response()->json([
+    //             'message'=>'admin succsessfull delete'
+    //         ]);
+    //     }else{
+    //         return response()->json([
+    //             'error'=> 'Admin not found !'
+    //         ]);
+    //     }
+    // }
 }

@@ -18,13 +18,12 @@ class UserController extends Controller
         $userInfo = User::find($id);
         if(!$userInfo){
             return response()->json([
-                'message'=>$userInfo->error()
+                'message'=>"User Not Found !"
             ]);
         }else{
 
-            $userInfo->name = $request->name;
+            $userInfo->name = $request->input('name');
             $userInfo->email = $request->email;
-           
             $userInfo->password = $request->password;
             $userInfo->update();
             $userInfo->save();

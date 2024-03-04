@@ -31,8 +31,6 @@ class PostController extends Controller
         }
     }
 
-
-
     public function store(PostStoreRequest $request){
 
         try{
@@ -57,23 +55,20 @@ class PostController extends Controller
                 'error'=>$e->getMessage()
             ]);
         }
-
     }
 
-    public function update(PostStoreRequest $request,$id){
+    public function update(Request $request,$id){
         try{
-            $post = Post::find($id);
+            $post = Post::findOrFail($id);
             if(!$post){
                 return response()->json([
                     'message'=> 'Post Not Found'
                 ]);
             }
 
-            $post->name = $request->name;
-           
-            $post->description ??= $request->description;
-           
-           
+            $post->name = $request->name ? $request->name : $post->name;
+
+          $post->description = $request->description ? $request->description : $post->description;
 
             if($request->image){
                 
@@ -82,14 +77,12 @@ class PostController extends Controller
                 if($storage->exists($post->image))
                 $storage->delete($post->image);
 
-
-                //name
                 $imageName = Str::random(32).".".$request->image->getClientOriginalExtension();
                 $post->image = $imageName;
 
                 $storage->put($imageName,file_get_contents($request->image));
             }
-
+            
             $post->save();
             return response()->json([
                 'message'=>'Post Successfully update'
@@ -102,6 +95,7 @@ class PostController extends Controller
             ]);
         }
     }
+   
 
     public function delete(Request $request, $id){
         $post = Post::find($id);
